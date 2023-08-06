@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33815.320
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastVKBot", "FastVKBot.csproj", "{D5180730-8A9D-49D2-A46F-3D7D45759870}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastVKBot", "FastVKBot.csproj", "{D5180730-8A9D-49D2-A46F-3D7D45759870}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastVKBot_Test", "..\FastVKBot_Test\FastVKBot_Test.csproj", "{1EA67B7E-3526-4ABA-9FEC-91A3210D6EDA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{D5180730-8A9D-49D2-A46F-3D7D45759870}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D5180730-8A9D-49D2-A46F-3D7D45759870}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D5180730-8A9D-49D2-A46F-3D7D45759870}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EA67B7E-3526-4ABA-9FEC-91A3210D6EDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EA67B7E-3526-4ABA-9FEC-91A3210D6EDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EA67B7E-3526-4ABA-9FEC-91A3210D6EDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EA67B7E-3526-4ABA-9FEC-91A3210D6EDA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
