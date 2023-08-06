@@ -1,11 +1,11 @@
 ﻿using Newtonsoft.Json;
 
 namespace FastVKBot.Requests;
-internal abstract class RequestBase<IRequestResult> : IRequestBase<IRequestResult>
+internal abstract class RequestWithResult<IRequestResult> : IRequestBase
 {
     private readonly TaskCompletionSource<IRequestResult> _tcs = new();
 
-    public Task Task => _tcs.Task;
+    public Task<IRequestResult> Task => _tcs.Task;
     public abstract string MethodName { get; }
 
     public abstract string GetRequestForVkScript();

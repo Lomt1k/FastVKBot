@@ -5,6 +5,11 @@ public struct MessageId : IRequestResult
 {
     public long Id { get; set; }
 
+    public MessageId(long id)
+    {
+        Id = id;
+    }
+
     public void ReadFromResponse(JsonTextReader reader)
     {
         while (reader.Read())
@@ -30,4 +35,6 @@ public struct MessageId : IRequestResult
     {
         return Id.ToString();
     }
+
+    public static implicit operator MessageId(long id) => new(id);
 }

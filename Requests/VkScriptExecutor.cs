@@ -1,4 +1,5 @@
 ﻿using FastVKBot.DataTypes;
+using FastVKBot.Requests.Messages;
 using HellBrick.Collections;
 using Newtonsoft.Json;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Text;
 namespace FastVKBot.Requests;
 internal class VkScriptExecutor
 {
-    private readonly AsyncQueue<RequestBase<IRequestResult>> _queue = new();
+    private readonly AsyncQueue<IRequestBase> _queue = new();
     private readonly string _token;
     private readonly HttpClient _httpClient;
 
@@ -22,21 +23,23 @@ internal class VkScriptExecutor
         var delay = 1000 / Definitions.EXECUTIONS_PER_SECOND_LIMIT;
         while (true)
         {
-            await Task.Delay(delay);
+            await Task.Delay(delay).ConfigureAwait(false);
             Task.Run(ExecuteNext);
         }
     }
 
 
-    public void AddRequest(RequestBase<IRequestResult> request)
+    public void AddRequest(IRequestBase request)
     {
+        Console.WriteLine($"AddRequest {request.GetType().Name}");
         _queue.Add(request);
     }
 
     private async Task ExecuteNext()
     {
-        var requests = new List<RequestBase<IRequestResult>>();
-        for (int i = 0; i < Definitions.REQUESTS_IN_EXECUTION_LIMIT; i++)
+        var requests = new List<IRequestBase>();
+        var count = Math.Min(_queue.Count, Definitions.REQUESTS_IN_EXECUTION_LIMIT);
+        for (int i = 0; i < count; i++)
         {
             var request = await _queue.TakeAsync().ConfigureAwait(false);
             if (request is not null)
@@ -45,10 +48,12 @@ internal class VkScriptExecutor
             }
         }
 
+        Console.WriteLine($"requests count: {requests.Count}");
         if (requests.Count < 1)
         {
             return;
         }
+        Console.WriteLine("Real execute!");
 
         var code = CreateVkScript(requests);
         var url = $"{Definitions.VK_API_ENDPOINT}execute";
@@ -81,22 +86,24 @@ internal class VkScriptExecutor
 
     }
 
-    private void HandleResponse(JsonTextReader reader, List<RequestBase<IRequestResult>> requests)
+    private void HandleResponse(JsonTextReader reader, List<IRequestBase> requests)
     {
         while (reader.Read())
         {
             var index = int.Parse(reader.Value.ToString());
-            requests[index].ReadAndSetResult(reader);
+            var request = (RequestWithResult<IRequestResult>) requests[index];
+            request.ReadAndSetResult(reader);
         }
     }
 
-    private string CreateVkScript(List<RequestBase<IRequestResult>> requests)
+    private string CreateVkScript(List<IRequestBase> requests)
     {
         var sb = new StringBuilder();
         sb.AppendLine("var results = [];");
         foreach (var request in requests)
         {
-            sb.AppendLine($"results.push({request.GetRequestForVkScript()})");
+            var json = (request as RequestWithResult<IRequestResult>).GetRequestForVkScript();
+            sb.AppendLine($"results.push({json})");
         }
         sb.AppendLine("return results;");
         return sb.ToString();

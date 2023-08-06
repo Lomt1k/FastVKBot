@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using System.Text;
 
 namespace FastVKBot.Requests.Messages;
-internal class SendMessageRequest : RequestBase<MessageId>
+internal class SendMessageRequest : RequestWithResult<MessageId>
 {
     private readonly int _randomId = new Random().Next();
 
