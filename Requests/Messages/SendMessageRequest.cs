@@ -20,7 +20,7 @@ internal class SendMessageRequest : RequestWithResult<MessageId>
             using var jsonWriter = new JsonTextWriter(sw);
             jsonWriter.WriteStartObject();
             jsonWriter.WritePropertyName("user_id");
-            jsonWriter.WriteValue(UserId);
+            jsonWriter.WriteValue(UserId.ToString());
             jsonWriter.WritePropertyName("random_id");
             jsonWriter.WriteValue(RandomId);
             if (Message is not null)

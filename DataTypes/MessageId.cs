@@ -12,23 +12,7 @@ public struct MessageId : IRequestResult
 
     public void ReadFromResponse(JsonTextReader reader)
     {
-        while (reader.Read())
-        {
-            if (reader.TokenType == JsonToken.EndObject)
-            {
-                return;
-            }
-            if (reader.TokenType == JsonToken.PropertyName)
-            {
-                var key = reader.Value.ToString();
-                switch (key)
-                {
-                    case "response":
-                        Id = long.Parse(reader.ReadAsString());
-                        return;
-                }
-            }
-        }
+        Id = long.Parse(reader.ReadAsString());
     }
 
     public override string ToString()

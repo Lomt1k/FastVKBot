@@ -1,6 +1,4 @@
-﻿using FastVKBot.DataTypes;
-using FastVKBot.Requests.Messages;
-using HellBrick.Collections;
+﻿using HellBrick.Collections;
 using Newtonsoft.Json;
 using System.Text;
 
@@ -31,7 +29,6 @@ internal class VkScriptExecutor
 
     public void AddRequest(IRequestBase request)
     {
-        Console.WriteLine($"AddRequest {request.GetType().Name}");
         _queue.Add(request);
     }
 
@@ -48,12 +45,11 @@ internal class VkScriptExecutor
             }
         }
 
-        Console.WriteLine($"requests count: {requests.Count}");
         if (requests.Count < 1)
         {
             return;
         }
-        Console.WriteLine("Real execute!");
+        Console.WriteLine("Execute VK Script!");
 
         var code = CreateVkScript(requests);
         var url = $"{Definitions.VK_API_ENDPOINT}execute";
@@ -90,8 +86,13 @@ internal class VkScriptExecutor
     {
         while (reader.Read())
         {
-            var index = int.Parse(reader.Value.ToString());
-            var request = (RequestWithResult<IRequestResult>) requests[index];
+            var value = reader.Value?.ToString();
+            if (value is null)
+            {
+                continue;
+            }
+            var index = int.Parse(value.Replace("result_", string.Empty));
+            var request = requests[index];
             request.ReadAndSetResult(reader);
         }
     }
@@ -99,13 +100,16 @@ internal class VkScriptExecutor
     private string CreateVkScript(List<IRequestBase> requests)
     {
         var sb = new StringBuilder();
-        sb.AppendLine("var results = [];");
-        foreach (var request in requests)
+        sb.AppendLine("var results = {};");
+        for (var i = 0; i < requests.Count; i++)
         {
-            var json = (request as RequestWithResult<IRequestResult>).GetRequestForVkScript();
-            sb.AppendLine($"results.push({json})");
+            var request = requests[i];
+            sb.AppendLine($"var result_{i} = {request.GetRequestForVkScript()}");
+            sb.AppendLine($"results.result_{i} = result_{i};");
         }
         sb.AppendLine("return results;");
+
+        Console.WriteLine($"VkScript: \n" + sb.ToString());
         return sb.ToString();
     }
 
