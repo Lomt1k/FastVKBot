@@ -32,7 +32,7 @@ internal class SendMessageRequest : RequestWithResult<MessageId>
         }
         var json = sb.ToString();
 
-        return $"API.messages.send({json});";
+        return $"API.{MethodName}({json});";
     }
 
     public override void ReadAndSetResult(JsonTextReader reader)

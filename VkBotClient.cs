@@ -7,6 +7,7 @@ namespace FastVKBot;
 public class VkBotClient
 {
     private VkScriptExecutor _executor;
+    private MultipleRequestScheduler _multipleRequestScheduler;
 
     public string Token { get; }
     public HttpClient HttpClient { get; } = new();
@@ -17,6 +18,7 @@ public class VkBotClient
         Token = token;
 
         _executor = new(this);
+        _multipleRequestScheduler = new(_executor);
     }
 
     public async Task<MessageId> SendMessageAsync(UserId userId, string message)
@@ -28,6 +30,12 @@ public class VkBotClient
         };
         _executor.AddRequest(request);
         return await request.Task.ConfigureAwait(false);
+    }
+
+    public async Task SendMultipleMessageAsync(UserId userId, string message)
+    {
+        var task = _multipleRequestScheduler.ScheduleMessage(userId, message);
+        await task.ConfigureAwait(false);
     }
 
 }

@@ -7,4 +7,6 @@ public static class Definitions
     public const int REQUESTS_IN_EXECUTION_LIMIT = 25;
     public const int EXECUTIONS_PER_SECOND_LIMIT = 20;
 
+    public const int PEERS_LIMIT_FOR_ONE_MESSAGE = 100;
+
 }
