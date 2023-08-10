@@ -21,20 +21,23 @@ public class VkBotClient
         _multipleRequestScheduler = new(_executor);
     }
 
-    public async Task<MessageId> SendMessageAsync(UserId userId, string message)
+    public async Task<MessageId> SendMessageAsync(UserId userId, string? message = null, ulong? stikerId = null, HashSet<string>? attachments = null, bool dontParseLinks = false)
     {
         var request = new SendMessageRequest
         {
             UserId = userId,
             Message = message,
+            StickerId = stikerId,
+            Attachments = attachments,
+            DontParseLinks = dontParseLinks,
         };
         _executor.AddRequest(request);
         return await request.Task.ConfigureAwait(false);
     }
 
-    public async Task SendMultipleMessageAsync(UserId userId, string message)
+    public async Task SendMultipleMessageAsync(UserId userId, string? message = null, ulong? stikerId = null, HashSet<string>? attachments = null, bool dontParseLinks = false)
     {
-        var task = _multipleRequestScheduler.ScheduleMessage(userId, message);
+        var task = _multipleRequestScheduler.ScheduleMessage(userId, message, stikerId, attachments, dontParseLinks);
         await task.ConfigureAwait(false);
     }
 

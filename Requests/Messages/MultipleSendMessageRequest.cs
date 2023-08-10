@@ -14,6 +14,9 @@ internal class MultipleSendMessageRequest : MultipleRequest<UserId>
     public int RandomId => _randomId;
     public HashSet<UserId> UserIds { get; set; } = new();
     public string? Message { get; set; }
+    public ulong? StickerId { get; set; }
+    public HashSet<string>? Attachments { get; set; }
+    public bool DontParseLinks { get; set; } = false;
 
     public override string GetRequestForVkScript()
     {
@@ -26,6 +29,8 @@ internal class MultipleSendMessageRequest : MultipleRequest<UserId>
                 jsonWriter.WriteStartObject();
                 jsonWriter.WritePropertyName("random_id");
                 jsonWriter.WriteValue(RandomId);
+                jsonWriter.WritePropertyName("dont_parse_links");
+                jsonWriter.WriteValue(DontParseLinks);
 
                 jsonWriter.WritePropertyName("user_ids");
                 jsonWriter.WriteStartArray();
@@ -39,6 +44,21 @@ internal class MultipleSendMessageRequest : MultipleRequest<UserId>
                 {
                     jsonWriter.WritePropertyName("message");
                     jsonWriter.WriteValue(Message);
+                }
+                else if (StickerId is not null)
+                {
+                    jsonWriter.WritePropertyName("sticker_id");
+                    jsonWriter.WriteValue(StickerId);
+                }
+                if (Attachments?.Count > 0)
+                {
+                    jsonWriter.WritePropertyName("attachment");
+                    jsonWriter.WriteStartArray();
+                    foreach (var attachment in Attachments)
+                    {
+                        jsonWriter.WriteValue(attachment.ToString());
+                    }
+                    jsonWriter.WriteEndArray();
                 }
                 jsonWriter.WriteEndObject();
             }
@@ -69,11 +89,6 @@ internal class MultipleSendMessageRequest : MultipleRequest<UserId>
     public override int GetHashCode()
     {
         return HashCode.Combine(MethodName, RandomId);
-    }
-
-    public override string GetMultipleRequestId()
-    {
-        return MethodName + Message;
     }
 
     public override bool TryAddToRequest(UserId value)
